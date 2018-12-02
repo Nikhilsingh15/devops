@@ -1,0 +1,16 @@
+---
+- host: all
+  become: yes
+  become_sudo: yes
+  task:
+    - name: Task | execute ssh-keygen
+      shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id rsa -q -n ""
+      args:
+        creates: /root/.ssh/id_rsa
+      delegate_to: localhost
+        
+    - name: task | set authorized key taken from file
+      authorized_key:
+        user: root
+        state: present
+        key: "{{  lookup('file', '/home/root/.ssh/id_rsa.pub')  }} "
